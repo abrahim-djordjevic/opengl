@@ -7,12 +7,15 @@
 #include "controls.cpp"
 #include <glm/gtc/matrix_transform.hpp>
 #include <time.h>
+#include "point.cpp"
 
 int HEIGHT = 200;
 int WIDTH = 200;
 
 GLFWwindow* window;
 using namespace glm;
+
+
 
 float randomFloat() 
 {
@@ -77,21 +80,20 @@ int main(void)
 	GLuint VertexArrayID;
 	glGenVertexArrays(1, &VertexArrayID);
 	glBindVertexArray(VertexArrayID);
-	
-	std::vector<float> g_buffer_template =
-	{
-		 0.0f, -1.0f,  1.0f,
-		 1.0f, -1.0f,  1.0f,
-		 0.0f, -1.0f,  0.0f,
 
-		 0.0f, -1.0f,  0.0f,
-		 1.0f, -1.0f,  1.0f,
-		 1.0f, -1.0f,  0.0f,
+	std::vector<Point> g_buffer_template =
+	{
+		{0.0f, 1.0f,  1.0f},
+		{1.0f, 1.0f,  1.0f},
+		{0.0f, 1.0f,  0.0f},
+		{0.0f, 1.0f,  0.0f},
+		{1.0f, 1.0f,  1.0f},
+		{1.0f, 1.0f,  0.0f},
 
 	};
 
 	//vao data
-	std::vector<float> g_vertex_buffer_data;
+	std::vector<Point> g_vertex_buffer_data;
 	
 	//ebo data
 	std::vector<unsigned int> g_indices;
@@ -100,16 +102,14 @@ int main(void)
 	{
 		for(int j = 0; j < WIDTH; j++)
 		{
+			g_vertex_buffer_data.push_back({0.0f + i, 1.0f,  1.0f + j});
+			g_vertex_buffer_data.push_back({1.0f + i, 1.0f,  1.0f + j});
+			g_vertex_buffer_data.push_back({0.0f + i, 1.0f,  0.0f + j});
+			g_vertex_buffer_data.push_back({0.0f + i, 1.0f,  0.0f + j});
+			g_vertex_buffer_data.push_back({1.0f + i, 1.0f,  1.0f + j});
+			g_vertex_buffer_data.push_back({1.0f + i, 1.0f,  0.0f + j});
 
-			for(int k = 0; k < 6; k++)
-			{
-				g_vertex_buffer_data.push_back(g_buffer_template[(3*k) + 0]+i);
-				g_vertex_buffer_data.push_back(g_buffer_template[(3*k) + 1]);
-				g_vertex_buffer_data.push_back(g_buffer_template[(3*k) + 2]+j);
-
-				g_indices.push_back(g_indices.size());
-			}
-
+			for(int k = 0; k < 6; k++){ g_indices.push_back(g_indices.size()); }
 		}
 	}
 
@@ -117,7 +117,7 @@ int main(void)
 	GLuint vertexbuffer;	
 	glGenBuffers(1, &vertexbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	glBufferData(GL_ARRAY_BUFFER, g_vertex_buffer_data.size() * sizeof(unsigned int), &g_vertex_buffer_data[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, g_vertex_buffer_data.size() * sizeof(Point), &g_vertex_buffer_data[0], GL_STATIC_DRAW);
 
 	// element buffer
 	GLuint elementbuffer;
